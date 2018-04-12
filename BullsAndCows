@@ -1,0 +1,153 @@
+using System;
+
+namespace BullsAndCows
+{
+    class Program
+    {
+    	static int Menu()
+        {
+            int number;
+            string value = "";
+
+            Console.WriteLine("1.Новая игра");
+            Console.WriteLine("0.Выход");
+            Console.Write("Ваш выбор: ");
+
+            value = Console.ReadLine();
+
+            bool result = Int32.TryParse(value,out number);
+            if(result)
+            {
+                return Convert.ToInt32(value);
+            }
+
+            return 2;
+		}
+        static int[] Translate(string num)
+        {
+            int[] x = new int[4];
+
+            for (int i = 0; i < num.Length; i++)
+            {
+                x[i] = Convert.ToInt32(num[i].ToString());
+            }
+            return x;
+        }
+
+        static bool Test(string fourNum)
+        {
+            if (fourNum.Length == 4)
+            {
+                int value;
+                return Int32.TryParse(fourNum, out value);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        static void Main(string[] args)
+        {
+            Random rand = new Random();
+            int[] compSecretNum = new int[4];
+            int[] userNum = new int[4];
+            int[] countUser = new int[2]; // 0 - bulls, 1 - cows
+            int[] countComp = new int[2];
+            string temp = "";
+            int answer;
+
+
+            while(true)
+            {
+            	answer = Menu();
+            	if(answer == 1)
+            	{
+            		for (int i = 0; i < compSecretNum.Length; i++)
+            		{
+                		bool contain;
+                		do
+                		{
+                    		contain = false;
+                    		compSecretNum[i] = rand.Next(0, 10);
+                    		for (int j = 0; j < i; j++)
+                    		{
+                        		if (compSecretNum[j] == compSecretNum[i])
+                        		{
+                            		contain = true;
+                            		break;
+                        		}
+                    		}
+                		} while (contain);
+            		}
+            
+            		while (true)
+            		{
+                		Console.WriteLine("Ваш ход:");
+
+                		for (int j = 0; j < countUser.Length; j++)
+                		{
+                    		countUser[j] = 0;
+                    		countComp[j] = 0;
+                		}
+
+                		while (true)
+                		{
+                    		int k = 0;
+                    		if (!Test(temp = Console.ReadLine()))
+                    		{
+                        		Console.WriteLine("Некорректный ввод, попробуйте ещё раз.");
+                    		}
+                    		else
+                    		{
+                        		userNum = Translate(temp);
+                        		for (int i = 0; i < 4; i++)
+                        		{
+                            		for (int j = i + 1; j < 4; j++)
+                            		{
+                                		if (userNum[i] == userNum[j])
+                                    		k = 1;
+                            		}
+                        		}
+                        		if (k != 0)
+                            		Console.WriteLine("Некорректный ввод, попробуйте ещё раз.");
+                        		else
+                            		break;
+                    		}
+                		}
+
+                		for (int i = 0; i < userNum.Length; i++)
+                		{
+
+                    		if (Array.IndexOf(compSecretNum, userNum[i]) != -1)
+                    		{
+                        		if (userNum[i] == compSecretNum[i])
+                        		{
+                            		countUser[0]++;
+                        		}
+                        		else
+                        		{
+                            		countUser[1]++;
+                        		}
+                    		}
+                		}
+                		Console.WriteLine("{0}Б{1}К", countUser[0], countUser[1]);
+
+                		if (countUser[0] == 4)
+                		{
+                    		Console.WriteLine("Победа!");
+                    		Environment.Exit(0);
+                		}
+            		}
+            	}
+            	else if(answer == 0)
+            	{
+            		Environment.Exit(0);
+            	}
+            	else 
+            	{
+            		Console.WriteLine("Такого пункта меню не существует.");
+            	}
+        	}
+        }
+    }
+}
